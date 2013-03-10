@@ -1,95 +1,69 @@
 #include "common.h"
 
 Shaman::Shaman(){
-	this->selfWindFury_ = 0;	
-	this->windFury_ = 0;
-	this->mana_ = 0;
-	this->strenght_ = 0;
-	this->fire_ = 0;
-}
 
-void Shaman::CastWindfury(){
-	if(this->windFury_ == 0)
-	{
-		this->nextKey_ = '3';
-		this->windFury_ = 1;
-	}
-}
-void Shaman::CastMana(){
-}
-void Shaman::CastStrength(){
-	if (this->strenght_ == 0)
-	{
-		this->nextKey_ = '4';
-		this->strenght_ = 1;
-	}
-}
-void Shaman::CastFire(){
-}
-
-void Shaman::CastBolt(){
-	this->nextKey_ = '8';	
-}
-
-void Shaman::CastTotemicCall(){
-	this->windFury_ = 0;
-	this->mana_ = 0;
-	this->strenght_ = 0;
-	this->fire_ = 0;
-	this->nextKey_ = '7';
-}
-
-int Shaman::GetWindFury(){
-	return this->windFury_;
-}
-int	Shaman::GetMana(){
-	return this->mana_;
-}
-int	Shaman::GetStrength(){
-	return this->strenght_;
-}
-int Shaman::GetFire(){
-	return this->fire_;
-}
-
-int	Shaman::SyncWindFury(){
-	return 1;
-}
-int	Shaman::SyncMana(){
-	return 1;
-}
-int	Shaman::SyncStrength(){
-	return 1;
-}
-int	Shaman::SyncFire(){
-	return 1;
-}
-
-void Shaman::CastSelfWindFury(){
-}
-int	Shaman::GetSelfWindFury(){
-	return this->selfWindFury_;
-}
-int	Shaman::SyncSelfWindFury(){
-	return 1;
 }
 
 int	Shaman::DoLogic(Dots in){
 	this->nextKey_ = '.';
-	int				r1,g1,b1, r2,g2,b2, r3,g3,b3;
+	this->spell_ = "";
+	this->target_ = "";
+	
+	// test to see if we are already casting
+	if ( GetBValue( in.allDots_[0].color_ ) == 255 )
+	{
+		return 0;
+	}
 
-/*	r1 = in.GetR1();
-	g1 = in.GetG1();
-	b1 = in.GetB1();
+	//printf("PH for player: %d\n", GetRValue( in.allDots_[1].color_ ) );
 
-	r2 = in.GetR2();
-	g2 = in.GetG2();
-	b2 = in.GetB2();
+	int i;
+	int smalest = -1;				// 0
+	int smalest_health = 100;		// 100
+	int percentHealth = 0;
 
-	r3 = in.GetR3();
-	g3 = in.GetG3();
-	b3 = in.GetB3();
+	for( i=1 ; i<in.nDots_ ; i++ )
+	{
+		percentHealth = GetRValue( in.allDots_[i].color_ );
+		// If the target is not dead/out of range, and below X% health
+		if( percentHealth > 0 && percentHealth < 80 )
+		{
+			if( percentHealth < smalest_health )
+			{
+				smalest = i-1;
+				smalest_health = percentHealth;
+			}
+		}
+	}
 
+	if( smalest < 0 )
+		// nothing to do
+		return 0;
+
+	// raid or not?
+	this->target_ = "party";
+	if ( GetBValue( in.allDots_[1].color_ ) == 1 )
+	{	
+		this->target_ = "raid";
+	}
+
+	// is it the player?
+	if( smalest == 0 )
+		this->target_ = "player";
+
+
+
+	// party or raid member then
+	if( smalest > 0 )
+		this->target_ = this->target_+IntToString( smalest );
+		
+	// is riptide ready?
+	if ( GetGValue( in.allDots_[1].color_ ) == 1 )
+		this->spell_ = "Riptide";
+	else
+		this->spell_ = "Greater Healing Wave";
+
+/*	
 	this->target_ = "";
 	this->spell_ = "";
 
@@ -161,9 +135,9 @@ void Shaman::CombatStart()
 	this->SetCombat(1);
 	printf("Combat set on %d\n",this->GetCombat());
 	// FullKeyPress('W');	// stop following
-	FullKeyPress('3');	// windfury totem
-	Sleep(1100);
-	FullKeyPress('4');
+	//FullKeyPress('3');	// windfury totem
+	//Sleep(1100);
+	//FullKeyPress('4');
 	//this->target_ = "/clearfocus";
 }
 
@@ -172,7 +146,7 @@ void Shaman::CombatEnd()
 	this->SetCombat(0);
 	printf("Combat set off %d\n",this->GetCombat());
 	FullKeyPress(VkKeyScan('='));	// following
-	FullKeyPress('7');	// totem recal
+	//FullKeyPress('7');	// totem recal
 }
 
 void Shaman::CombatDoOnce(){

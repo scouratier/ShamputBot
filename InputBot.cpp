@@ -4,7 +4,7 @@
 
 void main(void){
 	Dots			dots;
-	Sleep(4000);
+	Sleep(1000);
 
 	Shaman			me;
 	
