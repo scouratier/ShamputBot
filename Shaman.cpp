@@ -26,6 +26,8 @@ int	Shaman::DoLogic(Dots in){
 	{
 		percentHealth = GetRValue( in.allDots_[i].color_ );
 		// If the target is not dead/out of range, and below X% health
+
+
 		if( percentHealth > 0 && percentHealth < 80 )
 		{
 			if( percentHealth < smalest_health )
@@ -56,12 +58,25 @@ int	Shaman::DoLogic(Dots in){
 	// party or raid member then
 	if( smalest > 0 )
 		this->target_ = this->target_+IntToString( smalest );
-		
+	
+	this->spell_ = "Greater Healing Wave";
+
+	if ( GetGValue( in.allDots_[1].color_ ) & 0x01 )
+		this->spell_ = "Mana Tide Totem";
 	// is riptide ready?
-	if ( GetGValue( in.allDots_[1].color_ ) == 1 )
+	if ( GetGValue( in.allDots_[1].color_ ) & 0x40 )
+		this->spell_ = "Unleash Elements";
+
+	if ( GetGValue( in.allDots_[1].color_ ) & 0x08 )
+		this->spell_ = "Healing Stream Totem";
+
+	if ( GetGValue( in.allDots_[1].color_ ) & 0x80 )
 		this->spell_ = "Riptide";
-	else
-		this->spell_ = "Greater Healing Wave";
+
+	
+	
+
+		
 
 /*	
 	this->target_ = "";
