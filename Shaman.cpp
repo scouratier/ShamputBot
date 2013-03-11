@@ -57,8 +57,14 @@ int	Shaman::DoLogic(Dots in){
 
 	// party or raid member then
 	if( smalest > 0 )
-		this->target_ = this->target_+IntToString( smalest );
-	
+	{
+		if ( GetBValue( in.allDots_[1].color_ ) == 0 )
+		{
+			smalest++;
+			this->target_ = this->target_+IntToString( smalest );
+		}
+	}
+
 	this->spell_ = "Greater Healing Wave";
 
 	if ( GetGValue( in.allDots_[1].color_ ) & 0x01 )
